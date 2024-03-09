@@ -67,7 +67,7 @@
     <input type="hidden" id="selectedServizio_ID" name="selectedServizio_ID" value="">
     <label for="Servizio_ID">Servizio:</label>
 
-    <select id="Servizio_ID" name="Servizio_ID" @*onchange="updateSelectedServizioID(this)*@">
+    <select id="Servizio_ID" name="Servizio_ID" onchange="updateSelectedServizioID(this)">
         @foreach (var servizio in ViewBag.ServiziPrenotati)
         {
             <option value="@servizio.Servizio_ID">@servizio.Tipo</option>
@@ -87,12 +87,12 @@
     <input class="btn btn-info" type="submit" value="Submit">
 </form>
 
-@*<script>
+<script>
     function updateSelectedServizioID(selectElement) {
         var selectedServizioID = selectElement.value;
         document.getElementById("selectedServizio_ID").value = selectedServizioID;
     }
-</script>*@
+</script>
 
 
 <script>
