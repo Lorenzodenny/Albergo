@@ -8,7 +8,7 @@
 
 @using (Html.BeginForm("AddPren", "Prenotazioni", FormMethod.Post))
 {
-   
+
     <div class="form-group">
         @Html.LabelFor(model => model.Data_Pren)
         @Html.EditorFor(model => model.Data_Pren, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
@@ -17,14 +17,18 @@
 
     <div class="form-group">
         @Html.LabelFor(model => model.Data_Arrivo)
-        @Html.EditorFor(model => model.Data_Arrivo, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
+        @Html.EditorFor(model => model.Data_Arrivo, new { htmlAttributes = new { @class = "form-control", type = "datetime-local", id = "Data_Arrivo" } })
         @Html.ValidationMessageFor(model => model.Data_Arrivo, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
         @Html.LabelFor(model => model.Data_Partenza)
-        @Html.EditorFor(model => model.Data_Partenza, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
+        @Html.EditorFor(model => model.Data_Partenza, new { htmlAttributes = new { @class = "form-control", type = "datetime-local", id = "Data_Partenza" } })
         @Html.ValidationMessageFor(model => model.Data_Partenza, "", new { @class = "text-danger" })
+    </div>
+
+    <div id="dateError" class="text-danger" style="display: none;">
+        La data di arrivo non può superare la data di partenza.
     </div>
 
     <div class="form-group">
@@ -54,3 +58,28 @@
         <input type="submit" value="Inserisci Prenotazione" class="btn btn-primary" />
     </div>
 }
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        function validateDateRange() {
+            var arrivalDate = new Date($('#Data_Arrivo').val());
+            var departureDate = new Date($('#Data_Partenza').val());
+
+            if (arrivalDate > departureDate) {
+
+                $('#dateError').show();
+                $('input[type="submit"]').prop('disabled', true);
+            } else {
+
+                $('#dateError').hide();
+                $('input[type="submit"]').prop('disabled', false);
+            }
+        }
+
+
+        $('#Data_Arrivo, #Data_Partenza').change(validateDateRange);
+    });
+</script>
