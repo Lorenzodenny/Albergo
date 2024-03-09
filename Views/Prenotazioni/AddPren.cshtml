@@ -8,6 +8,7 @@
 
 @using (Html.BeginForm("AddPren", "Prenotazioni", FormMethod.Post))
 {
+   
     <div class="form-group">
         @Html.LabelFor(model => model.Data_Pren)
         @Html.EditorFor(model => model.Data_Pren, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
@@ -27,28 +28,27 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.AnnoProg)
-        @Html.EditorFor(model => model.AnnoProg, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(model => model.AnnoProg, "", new { @class = "text-danger" })
-    </div>
-
-    <div class="form-group">
         @Html.LabelFor(model => model.Pensione_ID)
-        @Html.DropDownListFor(model => model.Pensione_ID, new SelectList(ViewBag.Pensioni, "Pensione_ID", "Tipo"), "-- Seleziona Pensione --", new { @class = "form-control" })
+        @Html.DropDownListFor(model => model.Pensione_ID, new SelectList(ViewBag.Pensioni, "Pensione_ID", "Tipo"), "-- Seleziona Pensione --", new { @class = "form-control", id = "Pensione_ID" })
         @Html.ValidationMessageFor(model => model.Pensione_ID, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
         @Html.LabelFor(model => model.Ospite_ID)
-        @Html.EditorFor(model => model.Ospite_ID, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.DropDownListFor(model => model.Ospite_ID, new SelectList(ViewBag.Ospiti, "Ospite_ID", "NomeCompletoCodFisc"), "-- Seleziona Ospite --", new { @class = "form-control", id = "Ospite_ID" })
         @Html.ValidationMessageFor(model => model.Ospite_ID, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
         @Html.LabelFor(model => model.Camera_ID)
-        @Html.DropDownListFor(model => model.Camera_ID, new SelectList(ViewBag.Camere, "Camera_ID", "Numero"), "-- Seleziona Camera --", new { @class = "form-control" })
+        @Html.DropDownListFor(model => model.Camera_ID, new SelectList(ViewBag.Camere, "Camera_ID", "Numero"), "-- Seleziona Camera --", new { @class = "form-control", id = "Camera_ID" })
         @Html.ValidationMessageFor(model => model.Camera_ID, "", new { @class = "text-danger" })
     </div>
+
+    <!-- Input hidden per memorizzare gli ID selezionati -->
+    @Html.HiddenFor(model => model.Pensione_ID, new { id = "HiddenPensione_ID" })
+    @Html.HiddenFor(model => model.Ospite_ID, new { id = "HiddenOspite_ID" })
+    @Html.HiddenFor(model => model.Camera_ID, new { id = "HiddenCamera_ID" })
 
     <div class="form-group">
         <input type="submit" value="Inserisci Prenotazione" class="btn btn-primary" />

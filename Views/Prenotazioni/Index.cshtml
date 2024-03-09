@@ -1,5 +1,5 @@
-﻿<table class="table table-bordered table-striped">
-    <thead>
+﻿<table class="table table-success table-hover">
+    <thead class="table-dark">
         <tr>
             <th>Prenotazione ID</th>
             <th>Data Prenotazione</th>
@@ -26,10 +26,10 @@
                 <td>@prenotazione.Camera.Numero</td>
                 <td>@prenotazione.Pensione.Tipo</td>
                 <td class="d-flex">
-                    @Html.ActionLink("Dettaglio", "Details", "Prenotazioni", new { id = prenotazione.Prenotazione_ID }, new { @class = "btn btn-outline-success me-2" })
+                    @Html.ActionLink("Dettaglio", "Details", "Prenotazioni", new { id = prenotazione.Prenotazione_ID }, new { @class = "btn btn-success me-2" })
                 </td>
                 <td>
-                    @Html.ActionLink("Aggiungi servizi", "AddServizi", "Prenotazioni", new { id = prenotazione.Prenotazione_ID }, new { @class = "btn btn-outline-info" })
+                    @Html.ActionLink("Aggiungi servizi", "AddServizi", "Prenotazioni", new { id = prenotazione.Prenotazione_ID }, new { @class = "btn btn-info" })
                 </td>
             </tr>
         }

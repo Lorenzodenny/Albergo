@@ -181,13 +181,13 @@ namespace Albergo.Controllers
             {
                 Db.conn.Open();
                 var command = new SqlCommand(@"SELECT *, o.Nome AS NomeOspite, o.Cognome AS CognomeOspite
-                FROM Prenotazioni AS p
-                JOIN Pensioni AS pe ON pe.Pensione_ID = p.Pensione_ID
-                JOIN Camere AS c ON c.Camera_ID = p.Camera_ID
-                JOIN Camere AS cam ON cam.Camera_ID = p.Camera_ID
-                JOIN Categorie AS cat ON cat.Categoria_ID = cam.Categoria_ID
-                JOIN Ospiti AS o ON o.Ospite_ID = p.Ospite_ID
-                WHERE Prenotazione_ID=@id", Db.conn);
+         FROM Prenotazioni AS p
+         JOIN Pensioni AS pe ON pe.Pensione_ID = p.Pensione_ID
+         JOIN Camere AS c ON c.Camera_ID = p.Camera_ID
+         JOIN Camere AS cam ON cam.Camera_ID = p.Camera_ID
+         JOIN Categorie AS cat ON cat.Categoria_ID = cam.Categoria_ID
+         JOIN Ospiti AS o ON o.Ospite_ID = p.Ospite_ID
+         WHERE Prenotazione_ID=@id", Db.conn);
                 command.Parameters.AddWithValue("id", id);
                 var reader = command.ExecuteReader();
                 if (reader.HasRows)
@@ -228,9 +228,9 @@ namespace Albergo.Controllers
                 reader.Close();
 
                 var comServizi = new SqlCommand(@"SELECT *
-                                         FROM PS as p
-                                         JOIN Servizi as s ON s.Servizio_ID = p.Servizio_ID
-                                         WHERE p.Prenotazione_ID=@id", Db.conn);
+                                  FROM PS as p
+                                  JOIN Servizi as s ON s.Servizio_ID = p.Servizio_ID
+                                  WHERE p.Prenotazione_ID=@id", Db.conn);
                 comServizi.Parameters.AddWithValue("@id", id);
                 var readerServizi = comServizi.ExecuteReader();
                 if (readerServizi.HasRows)
@@ -259,6 +259,22 @@ namespace Albergo.Controllers
                     TotServizi = TotServizi,
                     TotPren = totalePrenotazione
                 };
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                Db.conn.Close();
+            }
+
+            try
+            {
+                Db.conn.Open();
                 List<Servizio> lista = new List<Servizio>();
                 var cmd = new SqlCommand("SELECT * FROM Servizi", Db.conn);
                 var listaservizi = cmd.ExecuteReader();
@@ -272,22 +288,23 @@ namespace Albergo.Controllers
                         servizio.Tipo = (string)listaservizi["Tipo"];
                         lista.Add(servizio);
                     }
-                    ViewBag.ServiziPrenotati = lista;
+                    TempData["Servizi"] = lista;
                     listaservizi.Close();
                 }
- 
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            catch { }
             finally
             {
                 Db.conn.Close();
             }
-            
+
+
+
+
+
             return View(pren);
         }
+
 
         [HttpPost]
         public ActionResult AddServizi(PS ps)
@@ -357,6 +374,29 @@ namespace Albergo.Controllers
                 ViewBag.Pensioni = listaPensioni;
                 readerPensioni.Close();
 
+                // Popola la lista degli ospiti e imposta ViewBag.Ospiti
+                List<Ospite> listaOspiti = new List<Ospite>();
+                var cmdOspite = new SqlCommand("SELECT * FROM Ospiti", Db.conn);
+                var readerOspiti = cmdOspite.ExecuteReader();
+                while(readerOspiti.Read())
+                {
+                    var ospite = new Ospite();
+                    ospite.Ospite_ID = (int)readerOspiti["Ospite_ID"];
+                    ospite.Nome = (string)readerOspiti["Nome"];
+                    ospite.Cognome = (string)readerOspiti["Cognome"];
+                    ospite.Citta = (string)readerOspiti["Citta"];
+                    ospite.Provincia = (string)readerOspiti["Provincia"];
+                    ospite.Email = (string)readerOspiti["Email"];
+                    ospite.Telefono = (string)readerOspiti["Telefono"];
+                    ospite.Cod_Fisc = (string)readerOspiti["Cod_Fisc"];
+                    listaOspiti.Add(ospite);
+                }
+
+                ViewBag.Ospiti = listaOspiti;
+                readerOspiti.Close();
+
+
+
                 // Popola la lista delle camere e imposta ViewBag.Camere
                 List<Camera> listaCamere = new List<Camera>();
                 var cmdCamere = new SqlCommand("SELECT * FROM Camere", Db.conn);
@@ -385,6 +425,45 @@ namespace Albergo.Controllers
 
             return View();
         }
+
+        [HttpPost]
+        public ActionResult AddPren(Prenotazione pren)
+        {
+            try
+            {
+                Db.conn.Open();
+                var cmdPren = new SqlCommand(@"INSERT INTO Prenotazioni 
+                            (Data_Pren, Data_Arrivo, Data_Partenza, Pensione_ID, Ospite_ID, Camera_ID)
+                            VALUES(@data_pren, @data_arrivo, @data_partenza, @pensione_id, @ospite_id, @camera_id);
+                            SELECT SCOPE_IDENTITY();", Db.conn);
+                cmdPren.Parameters.AddWithValue("@data_pren", pren.Data_Pren);
+                cmdPren.Parameters.AddWithValue("@data_arrivo", pren.Data_Arrivo);
+                cmdPren.Parameters.AddWithValue("@data_partenza", pren.Data_Partenza);
+                cmdPren.Parameters.AddWithValue("@pensione_id", pren.Pensione_ID);
+                cmdPren.Parameters.AddWithValue("@ospite_id", pren.Ospite_ID);
+                cmdPren.Parameters.AddWithValue("@camera_id", pren.Camera_ID);
+                int lastInsertedId = Convert.ToInt32(cmdPren.ExecuteScalar());
+                if (lastInsertedId != 0)
+                {
+                    return RedirectToAction("Details", new { id = lastInsertedId });
+                }
+                else
+                {
+                    return View();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Gestisci l'eccezione in modo appropriato, come registrare o visualizzare un messaggio di errore
+                Console.WriteLine(ex.Message);
+                return View();
+            }
+            finally
+            {
+                Db.conn.Close();
+            }
+        }
+
 
 
         public JsonResult GetCliente(string codFisc)
