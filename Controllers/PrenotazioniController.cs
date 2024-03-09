@@ -427,6 +427,7 @@ namespace Albergo.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddPren(Prenotazione pren)
         {
             try
